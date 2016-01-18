@@ -19,7 +19,6 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
  
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
  
@@ -27,12 +26,17 @@ public class Main {
     private static String jFrame;
     private static String jPanel;
     private static String jButton;
+    private static String roundButton;
+
     private static String setTitle;
     private static String title;
     private static String setDefaultCloseOperation;
     private static String add;
     private static String setBackgroundColor;
     private static String setText;
+
+    private static String press1;
+    private static String press2;
     private static String press3;
 
     public static void main(String[] args) {
@@ -95,20 +99,36 @@ public class Main {
             String query10 = node10.getAttributes().getNamedItem("name").getNodeValue(); // setText
 
 
-            press3 = "uiModel/widgetResourceModel/widgetResource/property";
-            Node node11 = (Node) xPath2.compile(press3).evaluate(xmlDocument2, XPathConstants.NODE);
-            String query11 = node11.getAttributes().getNamedItem("value").getNodeValue();
-            System.out.println(query10);
+            press1 = "uiModel/widgetResourceModel/widgetResource/property";
+            Node node11 = (Node) xPath2.compile(press1).evaluate(xmlDocument2, XPathConstants.NODE);
+            String query11 = node11.getAttributes().getNamedItem("value").getNodeValue(); // Press 1
+
+            press2 = "uiModel/widgetResourceModel/widgetResource/property[@value='Press 2']";
+            Node node12 = (Node) xPath2.compile(press2).evaluate(xmlDocument2, XPathConstants.NODE);
+            String query12 = node12.getAttributes().getNamedItem("value").getNodeValue(); // Press 2
+
+
+            press3 = "uiModel/widgetResourceModel/widgetResource/property[@value='Press 3']";
+            Node node13 = (Node) xPath2.compile(press3).evaluate(xmlDocument2, XPathConstants.NODE);
+            String query13 = node13.getAttributes().getNamedItem("value").getNodeValue(); // Press 3
+
+            roundButton = "widget/instances/instance/instance_api/class[@id='inst_2_cl_1']";
+            Node node14 = (Node) xPath2.compile(roundButton).evaluate(xmlDocument3, XPathConstants.NODE);
+            String query14 = node14.getAttributes().getNamedItem("path").getNodeValue(); // gr.rb.RoundButton
 
             Class rootFrame = Class.forName(query1);
             Class parentJpanel = Class.forName(query7);
             Class childJpanel = Class.forName(query7);
             Class press1 = Class.forName(query9);
+            Class press2 = Class.forName(query14);
+            Class press3 = Class.forName(query9);
 
             Object rootFrameObject = rootFrame.newInstance();
             Object parentJpanelObject = parentJpanel.newInstance();
             Object childJpanelObject = childJpanel.newInstance();
             Object press1Object = press1.newInstance();
+            Object press2Object = press2.newInstance();
+            Object press3Object = press3.newInstance();
 
             Method setTitle = rootFrame.getMethod(query2, String.class);
             Method setVisible = rootFrame.getMethod("setVisible", Boolean.TYPE);
@@ -116,15 +136,22 @@ public class Main {
             Method add = rootFrame.getMethod(query6, Component.class);
             Method setBackground = parentJpanel.getMethod(query8, Color.class);
             Method setText = press1.getMethod(query10, String.class);
+            Method pack = rootFrame.getMethod("pack");
 
             setTitle.invoke(rootFrameObject, query4);
             setDefaultCloseOperation.invoke(rootFrameObject, JFrame.DISPOSE_ON_CLOSE);
-            setBackground.invoke(parentJpanelObject, Color.BLUE); // just to make sure the panel is added
-            setBackground.invoke(childJpanelObject, Color.red);
+            setBackground.invoke(parentJpanelObject, Color.GREEN); // Parent jpanel
+            setBackground.invoke(childJpanelObject, Color.RED); // Child jpanel
             setText.invoke(press1Object, query11);
+            setText.invoke(press2Object, query12);
+            setText.invoke(press3Object, query13);
             add.invoke(childJpanelObject, press1Object);
-            add.invoke(rootFrameObject, parentJpanelObject);
+            add.invoke(childJpanelObject, press2Object);
             add.invoke(parentJpanelObject, childJpanelObject);
+            add.invoke(parentJpanelObject, press3Object);
+            add.invoke(rootFrameObject, parentJpanelObject);
+            pack.invoke(rootFrameObject);
+
             setVisible.invoke(rootFrameObject, true);
 
         } catch (FileNotFoundException e) {
